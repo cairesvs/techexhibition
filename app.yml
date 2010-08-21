@@ -1,0 +1,11 @@
+application: techdisplay
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /media
+  static_dir: public
+
+- url: /.*
+  script: main.py
