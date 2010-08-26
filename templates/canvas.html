@@ -63,6 +63,7 @@ $(html).find("div").each(function(){
 
 				if (canvas && canvas.getContext) {
 					var context = canvas.getContext('2d');
+					var count = 0;
 
 					Initialize();
 				}
@@ -70,6 +71,7 @@ $(html).find("div").each(function(){
 				function Initialize() {
 					canvas.addEventListener('mousemove', MouseMove, false);
 					window.addEventListener('resize', ResizeCanvas, false);
+	 				 
 					setInterval( TimeUpdate, 20 );
 					context.beginPath();
 
@@ -77,11 +79,14 @@ $(html).find("div").each(function(){
 				}
 
 				function TimeUpdate(e) {
-
+					count++;
 					context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
 					for( var i = 0; i < particles.length; i++ ) {
-
+						
+							
+						particles[i].y = particles[i].y + Math.sin((count + i * 10)/20 )*10; 					
+						
 						context.strokeStyle = particles[i].color;
 						context.beginPath();
 
@@ -94,7 +99,6 @@ $(html).find("div").each(function(){
 
 						var distanceFactor = DistanceBetween( mouse, particles[i] );
 						distanceFactor = Math.max( distanceFactor/50 , 1 );
-            console.log(distanceFactor);
 
             var carinha = distanceFactor*0.7/window.innerHeight;
             context.fillStyle = "rgba("+ particles[i].color+ "," +(0.3 + carinha)+")";
