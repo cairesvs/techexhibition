@@ -1,7 +1,7 @@
 <html>
 <head>
 <style type="text/css" media="screen">
-	.agenda{
+	#agenda{
 		font-family:Arial;
 		left:260px;
 		position:absolute;
@@ -15,13 +15,10 @@
 <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
 <body style="overflow:hidden; background: black">
+<div id="agenda"></div>
 <canvas id="canvasElement" width="100" height="100"></canvas>
 <script type="text/javascript" charset="utf-8">
 
-function HexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-function HexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-function HexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 var html = '';
 $.ajax({
   url: '/agenda',
@@ -44,15 +41,16 @@ $(html).find("div").each(function(){
           var largura = window.innerWidth -20;
 					particles.push( { 
 						id: i,
+            m: false,
             estado: $(eventos[i]).find(".info").find("small").html(), 
 						x:x*largura/maxX, 
-						y:( Math.sin(x)*10) + 320, 
+						y:( Math.sin(x*20)*80) + 320, 
 						vx:(Math.random()*2)-1, 
 						vy:(Math.random()*2-1),
 						nome: $(eventos[i]).find(".info").find("#evento").find("a").html(),
 						data: $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html(),
 						history: [],
-						size: eventos.length - i,
+						size: 2+Math.random(),
 						color: Math.random() > .5 ? "204,187,81"  : Math.random() > .5 ? "136,146,210" : "97,102,81"
 					} );
 				}
@@ -95,35 +93,29 @@ $(html).find("div").each(function(){
 						}
 
 						var distanceFactor = DistanceBetween( mouse, particles[i] );
-						distanceFactor = Math.max( Math.min( 15 - ( distanceFactor / 10 ), 10 ), 1 );
+						distanceFactor = Math.max( distanceFactor/50 , 1 );
+            console.log(distanceFactor);
 
-            var carinha = distanceFactor*0.7/10;
+            var carinha = distanceFactor*0.7/window.innerHeight;
             context.fillStyle = "rgba("+ particles[i].color+ "," +(0.3 + carinha)+")";
 
 						context.beginPath();
-            var masterSize = particles[i].size+distanceFactor*7;
+            var masterSize = particles[i].size/distanceFactor*20;
             if(masterSize > 500){
               masterSize = 500;
             }
             context.arc(particles[i].x,particles[i].y,masterSize,0,Math.PI*2,true);
 						context.closePath();
 						context.fill();
-						if(distanceFactor >= 10){
-								$('body').append("<div class='agenda'></div>");
-								$(".agenda").each(function(){
-                    $(this).addClass("" + particles[i].id);
-                    $(this).html("<center><h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p></center>");
-                    $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
-                    this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
+						if(distanceFactor == 1){
+								$("#agenda").each(function(){
+                      $(this).html("<h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p>");
+                      $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
+                      this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
+                      particles[i].m = true;
 								});
-						}else{
-							$(".agenda").each(function(){
-								if($(this).attr("class").match("" + particles[i].id)){
-									$(this).remove();
-								}
-							});
-						}
-					}
+            }
+          }
 				}
 
 				function MouseMove(e) {
@@ -152,7 +144,7 @@ $(html).find("div").each(function(){
 				}
 
 				function DistanceBetween(mousePointer,particle) {
-					var dx = particle.x-mousePointer.x;
+					var dx = particle.x-particle.size-mousePointer.x;
 					var dy = particle.y-mousePointer.y;
 					return Math.sqrt(dx*dx + dy*dy);
 				}
