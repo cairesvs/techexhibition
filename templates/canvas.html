@@ -2,11 +2,13 @@
 <head>
 <style type="text/css" media="screen">
 	.agenda{
-		font-family:Helvetica,Arial;
+		font-family:Arial;
 		left:260px;
 		position:absolute;
 		top:400px;
 		color:white;
+    width:250px;
+    height:250px;
 	}
 	
 </style>
@@ -20,20 +22,38 @@ function HexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
 function HexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
 function HexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
 function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+var html = '';
+$.ajax({
+  url: '/agenda',
+  async: false,
+  success: function(data){
+    html = data;
+  }
+});
+eventos = [];
+$(html).find("div").each(function(){
+    if($(this).attr("class").match("evento*")){
+      eventos.push(this);   
+    }
+});
+
 	var particles = [];
-				for( var i = 0; i < 20; i++ ) {
+				for( var i = 0; i < eventos.length; i++ ) {
+          var x = (i*5)+10+20;
+          var maxX = (eventos.length*5)+10+20;
+          var largura = window.innerWidth -20;
 					particles.push( { 
 						id: i,
-						x:Math.random()*(window.innerWidth-240)+120, 
-						y:Math.random()*(window.innerHeight-240)+120, 
+            estado: $(eventos[i]).find(".info").find("small").html(), 
+						x:x*largura/maxX, 
+						y:( Math.sin(x)*10) + 320, 
 						vx:(Math.random()*2)-1, 
 						vy:(Math.random()*2-1),
-						nome: "Server",
-						img: "htt",
-						data: "",
+						nome: $(eventos[i]).find(".info").find("#evento").find("a").html(),
+						data: $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html(),
 						history: [],
-						size: 4+Math.random(),
-						color: Math.random() > .5 ? "#CCBB51" : Math.random() > .5 ? "#69CDD4" : "#FFFF00"
+						size: eventos.length - i,
+						color: Math.random() > .5 ? "204,187,81"  : Math.random() > .5 ? "136,146,210" : "97,102,81"
 					} );
 				}
 
@@ -77,21 +97,24 @@ function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 						var distanceFactor = DistanceBetween( mouse, particles[i] );
 						distanceFactor = Math.max( Math.min( 15 - ( distanceFactor / 10 ), 10 ), 1 );
 
-						context.fillStyle = particles[i].color;
+            var carinha = distanceFactor*0.7/10;
+            context.fillStyle = "rgba("+ particles[i].color+ "," +(0.3 + carinha)+")";
+
 						context.beginPath();
-						context.arc(particles[i].x,particles[i].y,particles[i].size*distanceFactor*6,0,Math.PI*2,true);
+            var masterSize = particles[i].size+distanceFactor*7;
+            if(masterSize > 500){
+              masterSize = 500;
+            }
+            context.arc(particles[i].x,particles[i].y,masterSize,0,Math.PI*2,true);
 						context.closePath();
-						if(distanceFactor > 1){
-							context.fillStyle = "rgba("+HexToR(particles[i].color)+ "," +HexToG(particles[i].color)+ "," +HexToB(particles[i].color)+","+ 3/distanceFactor + ")";
-						}
 						context.fill();
 						if(distanceFactor >= 10){
 								$('body').append("<div class='agenda'></div>");
 								$(".agenda").each(function(){
-									$(this).addClass("" + particles[i].id);
-									$(this).html("<h2>FILE</h2><img src='http://www.filefestival.org/site_2007/imgs/logofile_eng.gif'/><p>20/10/2010</p>");
-									$(this).attr("style", "top:" + particles[i].y  + "px;left:" + particles[i].x + "px;display: block;width:"+ window.innerWidth+ "px;height:" + window.innerHeight+ "px");
-									this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
+                    $(this).addClass("" + particles[i].id);
+                    $(this).html("<center><h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p></center>");
+                    $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
+                    this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
 								});
 						}else{
 							$(".agenda").each(function(){
@@ -111,8 +134,8 @@ function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 				
 				function MouseCalibrate(particle){
 					return function(e){
-						mouse.x = e.layerX + particle.x;
-						mouse.y = e.layerY+ particle.y;
+						mouse.x = ( e.layerX + particle.x ) - 125;
+						mouse.y = ( e.layerY+ particle.y ) - 125;
 					}
 				}
 

@@ -1,4 +1,5 @@
 # Django settings for techexhibition project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
