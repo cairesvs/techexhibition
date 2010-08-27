@@ -100,14 +100,14 @@ $(html).find("div").each(function(){
 						var distanceFactor;
 						if(distance <= 100 )
 						{
-							var distanceFactor = Math.max( Math.min(1 / 1 + distance, 100), 1);
+							var distanceFactor = Math.max( Math.min(500/distance, 100), 1);
 						} else {
 							distanceFactor = 1;
 							
 						}
 
-            var carinha = distanceFactor*0.7/10;
-            context.fillStyle = "rgba("+ particles[i].color+ "," +(0.3 + carinha)+")";
+            var carinha = -distanceFactor*0.3/10;
+            context.fillStyle = "rgba("+ particles[i].color+ "," +(0.7 + carinha)+")";
 
 						context.beginPath();
             var masterSize = particles[i].size+distanceFactor*7;
@@ -121,7 +121,7 @@ $(html).find("div").each(function(){
 								$('body').append("<div class='agenda'></div>");
 								$(".agenda").each(function(){
                     $(this).addClass("" + particles[i].id);
-                    $(this).html("<center><h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p></center>");
+                    $(this).html("<h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p>");
                     $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
                     this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
 								});
