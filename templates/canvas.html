@@ -36,24 +36,25 @@ $(html).find("div").each(function(){
       eventos.push(this);   
     }
 });
-
+	var count = 0;
 	var particles = [];
 				for( var i = 0; i < eventos.length; i++ ) {
-          var x;
-				
 					var tamanhoJanela = window.innerWidth;
 					var margemHorizontal = 200;
           var minX = margemHorizontal;
 					var maxX = tamanhoJanela - margemHorizontal;
 					var espacamento = (maxX - minX)/eventos.length;
-				
+					var x = minX + (i * espacamento);
+					var y = 200;		
 					particles.push( { 
 						id: i,
             estado: $(eventos[i]).find(".info").find("small").html(), 
-						x: minX + (i * espacamento) , 
-						y:320, 
-						//vx:(Math.random()*2)-1, 
-						//vy:(Math.random()*2-1),
+						x: x , 
+						y: y,
+						xOriginal: x,
+						yOriginal: y,
+						vx:0, 
+						vy:0,
 						nome: $(eventos[i]).find(".info").find("#evento").find("a").html(),
 						data: $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html(),
 						history: [],
@@ -61,7 +62,7 @@ $(html).find("div").each(function(){
 						color: "255," + i * 5  + ",0"
 					} );
 				}
-
+				
 				var mouse = { x: 0, y: 0 };
 
 				var canvas = document.getElementById('canvasElement');
@@ -82,20 +83,19 @@ $(html).find("div").each(function(){
 
 					ResizeCanvas();
 				}
-
+				
 				function TimeUpdate(e) {
 
+					count++;
 					context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
 					for( var i = 0; i < particles.length; i++ ) {
 
+						particles[i].vx = Math.sin( count + i * 3);
+						particles[i].vy =  Math.sin(count + i * 5) ;
+
 						context.beginPath();
-
-						particles[i].history.push({	x: particles[i].x, y: particles[i].y });
-						if( particles[i].history.length > 45 ) {
-							particles[i].history.shift();
-						}
-
+					
 						var distance = DistanceBetween( mouse, particles[i] );
 						var distanceFactor;
 						if(distance <= 100 )
@@ -106,24 +106,48 @@ $(html).find("div").each(function(){
 							
 						}
 
+						if( distance <= 100 ) {
+							particles[i].x += particles[i].vx;
+						 	
+							if ( particles[i + 1] ) {
+								particles[i + 1].x += particles[i + 1].vx + 5;
+							} 
+							
+							if ( particles[i - 1] ) {
+								particles[i - 1].x += particles[i - 1].vx - 5;
+							}						
+						} else { 
+							particles[i].x = particles[i].xOriginal;
+						}
+						
+						particles[i].y += particles[i].vy;
+
             var carinha = -distanceFactor*0.3/10;
             context.fillStyle = "rgba("+ particles[i].color+ "," +(0.7 + carinha)+")";
 
 						context.beginPath();
-            var masterSize = particles[i].size+distanceFactor*7;
-            if(masterSize > 500){
-              masterSize = 500;
-            }
-            context.arc(particles[i].x,particles[i].y,masterSize,0,Math.PI*2,true);
+            var maxSize = particles[i].size + distanceFactor * 7;
+            
+            context.arc( 
+								particles[i].x,
+								particles[i].y,
+								maxSize,
+								0,
+								Math.PI * 2 ,
+								false);
+					
 						context.closePath();
 						context.fill();
+
 						if(distanceFactor >= 10){
-								$('body').append("<div class='agenda'></div>");
+								$('body').append("<div class='agenda " + particles[i].id + "'></div>");
 								$(".agenda").each(function(){
-                    $(this).addClass("" + particles[i].id);
-                    $(this).html("<h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p>");
-                    $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
-                    this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
+										if(!$(this).attr("class").match("" + particles[i].id)){			
+											$(this).removeClass().addClass("agenda " + particles[i].id);
+			                $(this).html("<h2>"+ particles[i].nome + "</h2><p>" + particles[i].data + "</p>");
+			                $(this).attr("style", "top:" + ( particles[i].y - 125)  + "px;left:" + (particles[i].x - 125) + "px;display: block;");
+			                this.addEventListener("mousemove", MouseCalibrate(particles[i]), false);
+										}
 								});
 						}else{
 							$(".agenda").each(function(){
@@ -146,13 +170,6 @@ $(html).find("div").each(function(){
 						mouse.x = ( e.layerX + particle.x ) - 125;
 						mouse.y = ( e.layerY+ particle.y ) - 125;
 					}
-				}
-
-				function Draw( x, y ) {
-					context.strokeStyle = '#ff0000';
-					context.lineWidth = 4;
-					context.lineTo(x, y);
-					context.stroke();
 				}
 
 				function ResizeCanvas(e) {
