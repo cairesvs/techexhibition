@@ -39,19 +39,21 @@ $(html).find("div").each(function(){
           var x = (i*5)+10+20;
           var maxX = (eventos.length*5)+10+20;
           var largura = window.innerWidth -20;
+	  var altura = window.innerHeight -20;
 					particles.push( { 
 						id: i,
             m: false,
             estado: $(eventos[i]).find(".info").find("small").html(), 
-						x:x*largura/maxX, 
-						y:( Math.sin(x*20)*80) + 320, 
+						x:largura/2, 
+						y:altura/2, 
 						vx:(Math.random()*2)-1, 
 						vy:(Math.random()*2-1),
 						nome: $(eventos[i]).find(".info").find("#evento").find("a").html(),
 						data: $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html(),
 						history: [],
 						size: 2+Math.random(),
-						color: Math.random() > .5 ? "204,187,81"  : Math.random() > .5 ? "136,146,210" : "97,102,81"
+						color: Math.random() > .5 ? "204,187,81"  : Math.random() > .5 ? "136,146,210" : "97,102,81",
+						radius: i
 					} );
 				}
 
@@ -83,10 +85,11 @@ $(html).find("div").each(function(){
 					context.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
 					for( var i = 0; i < particles.length; i++ ) {
-						
+						particles[i].radius = particles[i].radius + 1;
 							
-						particles[i].y = particles[i].y + Math.sin((count + i * 10)/20 )*10; 					
-						
+						particles[i].y = altura/2 + particles[i].radius * Math.sin((count + i * 10)/20 )*10;
+						particles[i].x = largura/2 + particles[i].radius * Math.cos((count + i * 10)/20 )*10;
+
 						context.strokeStyle = particles[i].color;
 						context.beginPath();
 
@@ -95,6 +98,11 @@ $(html).find("div").each(function(){
 						particles[i].history.push({	x: particles[i].x, y: particles[i].y });
 						if( particles[i].history.length > 45 ) {
 							particles[i].history.shift();
+						}
+						if( particles[i].x > largura && particles[i].y > altura ){
+							particles[i].x = largura/2;
+							particles[i].y = altura/2;
+							particles[i].radius = 0;
 						}
 
 						var distanceFactor = DistanceBetween( mouse, particles[i] );
