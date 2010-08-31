@@ -106,17 +106,14 @@ $(html).find("div").each(function(){
 							
 						}
 
-						if( distance <= 100 ) {
-							particles[i].x += particles[i].vx;
-						 	
+						if( distance > 60 && distance <= 100) {
 							if ( particles[i + 1] ) {
 								particles[i + 1].x += particles[i + 1].vx + 5;
 							} 
-							
 							if ( particles[i - 1] ) {
 								particles[i - 1].x += particles[i - 1].vx - 5;
 							}						
-						} else { 
+						} else  { 
 							particles[i].x = particles[i].xOriginal;
 						}
 						
