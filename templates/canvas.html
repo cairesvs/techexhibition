@@ -1,9 +1,12 @@
 <html>
 <head>
+	<link href='http://fonts.googleapis.com/css?family=Josefin+Sans+Std+Light' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="/media/master.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="/media/date.js"></script>
 </head>
 <body style="overflow:hidden;">
+	<h1>Boladão  de eventos</h1>
 	<div id="container"></div>
 	<div id="canvas"></div>
 	<script type="text/javascript" charset="utf-8">
@@ -23,11 +26,17 @@
 		    }
 		});
 	
-		for (var i=0; i < 8; i++) {
+		var minhaData = new MinhaData(new Date());
+		var diaDeHoje = new Date().getDay() + "/" + minhaData.getMes();
+		for (var i=0; i < 10; i++) {
 			var estado = $(eventos[i]).find(".info").find("small").html()
 			var nome = $(eventos[i]).find(".info").find("#evento").find("a").html()
 			var data = $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
-			$("div#container").append('<div class="ball" color="#babaca"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
+			if( diaDeHoje == data){
+				$("div#container").append('<div class="ball" color="170,209,255"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
+			}else{
+				$("div#container").append('<div class="ball" color="255,217,106"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
+			}
 		};
 	</script>
 	<script type="text/javascript" src="/media/protoclass.js"></script> 

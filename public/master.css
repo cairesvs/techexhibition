@@ -12,8 +12,19 @@ body {
 	text-align		: center;
 }
 
+h1{
+	font-family: 'Josefin Sans Std Light', arial, serif;
+	font-size:3em;
+	padding-top:12px;
+	color:white;
+}
+
+p{
+	font-weight: bold;
+}
+
 div.ball{
-	width			: 200px;
+	width			: 180px;
 }
 
 .content {

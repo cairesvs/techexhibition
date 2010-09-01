@@ -126,7 +126,7 @@ function createContentBall(className,size,color,html) {
 	var magicNumber = size * .5;
 	if (className !=='image' && className !=='image first') {
 		var graphics = circle.getContext( '2d' );
-		graphics.fillStyle = color;
+		graphics.fillStyle = "rgba("+ color +",0.6)";
 		graphics.beginPath();
 		graphics.arc( magicNumber, magicNumber, magicNumber, 0, PI2, true );
 		graphics.closePath();
@@ -160,7 +160,7 @@ function loop() {
 	delta[0] += (0 - delta[0]) * .5;
 	delta[1] += (0 - delta[1]) * .5;
 	world.m_gravity.x = 0 // -(0 + delta[0]);
-	world.m_gravity.y = -(100 + delta[1]);
+	world.m_gravity.y = (100 + delta[1]);
 	mouseDrag();
 	world.Step(timeStep, iterations);
 	for (i = 0; i < bodies.length; i++) {
