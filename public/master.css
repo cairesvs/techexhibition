@@ -1,0 +1,23 @@
+* {
+	margin			: 0;
+	padding			: 0;
+}
+
+body {
+	background		: #333 50% 0 repeat fixed;
+	color			: #222;
+	font-family		: Arial, serif;
+	font-size		: 12px;
+	line-height		: 1.3em;
+	text-align		: center;
+}
+
+div.ball{
+	width			: 200px;
+}
+
+.content {
+	left			: 0;
+	position		: absolute;
+	top				: 0;
+}

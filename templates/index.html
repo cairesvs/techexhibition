@@ -1,0 +1,34 @@
+<html>
+<head>
+	<script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+<body style="overflow:hidden;">
+	<div id="container"></div>
+	<div id="canvas"></div>
+	<script type="text/javascript" src="protoclass.js"></script> 
+	<script type="text/javascript" src='box2d.js'></script>
+	<script type="text/javascript" src='main.js'></script>
+	<script type="text/javascript" charset="utf-8">
+
+	var html = '';
+	$.ajax({
+	  url: '/agenda',
+	  async: false,
+	  success: function(data){
+	    html = data;
+	  }
+	});
+	
+	eventos = [];
+	$(html).find("div").each(function(){
+	    if($(this).attr("class").match("evento*")){
+	      eventos.push(this);   
+	    }
+	});
+	
+	var estado = $(eventos[i]).find(".info").find("small").html()
+	var nome = $(eventos[i]).find(".info").find("#evento").find("a").html()
+	var data = $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
+	</script>
+</body>
+</html>
