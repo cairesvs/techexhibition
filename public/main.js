@@ -1,12 +1,3 @@
-/*
-THERE WEB SITE 2010
------------------------------------------------------
-Designed and created by Jesson Yip. www.jessonyip.com
-Original code by Mr Doob www.mrdoob.com
------------------------------------------------------
-*/
-
-// Settings
 var body = document.body;
 var frameRate = 20;
 var contentPadding = 20;
@@ -17,13 +8,20 @@ var ballFriction = 0.2;
 var ballRestitution = 0.3;
 var ballRotation = 0;
 
-// Canvas Setup
+var item = {
+  clazz : "",
+  width : "",
+  background : "",
+  content : "",
+  info : ""
+}
+
+
 var canvas;
 var delta = [ 0, 0 ];
 var stage = [ window.screenX, window.screenY, window.innerWidth, window.innerHeight ];
 getBrowserDimensions();
 
-// Variables
 var container = document.getElementById('container');
 var containerParent = container.parentNode;
 var items = container.getElementsByTagName('div');
@@ -42,23 +40,15 @@ var PI2 = Math.PI * 2;
 var timeOfLastTouch = 0;
 
 
-// Init
-if (supports_canvas_text()) {
+if (supports_canvas()) {
 	init();
 	play();
 }
-
 
 function supports_canvas() {
   return !!document.createElement('canvas').getContext;
 }
 
-function supports_canvas_text() {
-  if (!supports_canvas()) { return false; }
-  var dummy_canvas = document.createElement('canvas');
-  var context = dummy_canvas.getContext('2d');
-  return typeof context.fillText == 'function';
-}
 
 function init() {
 	canvas = document.getElementById( 'canvas' );
@@ -74,26 +64,21 @@ function init() {
 	reset();
 }
 
-function convertContent() {
-	var itemClass;
-	var itemWidth;
-	var itemBackground;
-	var itemContent;
-	var itemInfo;
+function tranformContentForBall() {
 	for (var i=items.length-1; i>-1; i--) {
 		items[i].style.padding = 0;
 		items[i].style.clear = 'none';
-		itemClass = items[i].getAttribute('class');
-		itemWidth = items[i].clientWidth;
-		itemBackground = items[i].getAttribute("color");
-		itemContent = items[i].innerHTML;
-		createContentBall(itemClass, itemWidth, itemBackground, itemContent);
+		item.clazz = items[i].getAttribute('class');
+		item.width = items[i].clientWidth;
+		item.background = items[i].getAttribute("color");
+		item.content = items[i].innerHTML;
+		createContentBall(item);
 	}
 	body.removeChild(container);
 }
 
 function play() {
-	setInterval( loop, 1000 / 40 );
+	setInterval( loop, 25 );
 }
 
 function reset() {
@@ -107,26 +92,27 @@ function reset() {
 	}
 	bodies = [];
 	elements = [];
-	convertContent();
+	tranformContentForBall();
 }
 
-function createContentBall(className,size,color,html) {
+
+function createContentBall(item) {
 	var element = document.createElement( 'div' );
-	element.className = className;
-	element.width = element.height = size;
+	element.className = item.clazz;
+	element.width = element.height = item.width;
 	element.style.position = 'absolute';
-	element.style.left = -size + 'px';
-	element.style.top = -size + 'px';
+	element.style.left = -item.width + 'px';
+	element.style.top = -item.width + 'px';
 	element.style.cursor = "default";
 	canvas.appendChild(element);
 	elements.push( element );
 	var circle = document.createElement( 'canvas' );
-	circle.width = size;
-	circle.height = size;
-	var magicNumber = size * .5;
-	if (className !=='image' && className !=='image first') {
+	circle.width = item.width;
+	circle.height = item.width;
+	var magicNumber = item.width * .5;
+	if (item.clazz !=='image' && item.clazz !=='image first') {
 		var graphics = circle.getContext( '2d' );
-		graphics.fillStyle = "rgba("+ color +",0.6)";
+		graphics.fillStyle = "rgba("+ item.background +",0.6)";
 		graphics.beginPath();
 		graphics.arc( magicNumber, magicNumber, magicNumber, 0, PI2, true );
 		graphics.closePath();
@@ -136,22 +122,22 @@ function createContentBall(className,size,color,html) {
 	content = document.createElement( 'div' );
 	content.className = "content";
 	content.onSelectStart = null;
-	content.innerHTML = html;
+	content.innerHTML = item.content;
 	element.appendChild(content);
-	if (className !=='image' && className !=='image first' ) {
-		content.style.width = (size - contentPadding*2) + 'px';
-		content.style.left = (((size - content.clientWidth) / 2)) +'px';
-		content.style.top = ((size - content.clientHeight) / 2) +'px';
+	if (item.clazz !=='image' && item.clazz !=='image first' ) {
+		content.style.width = (item.width - contentPadding*2) + 'px';
+		content.style.left = (((item.width - content.clientWidth) / 2)) +'px';
+		content.style.top = ((item.width - content.clientHeight) / 2) +'px';
 	}
 	var b2body = new b2BodyDef();
 	var circle = new b2CircleDef();
-	circle.radius = size / 2;
+	circle.radius = item.width / 2;
 	circle.density = ballDensity;
 	circle.friction = ballFriction;
 	circle.restitution = ballRestitution;
 	b2body.AddShape(circle);
 	b2body.userData = {element: element};
-	b2body.position.Set( Math.random() * stage[2], Math.random() * (stage[3]-size) + size/2);
+	b2body.position.Set( Math.random() * stage[2], Math.random() * (stage[3]-item.width) + item.width/2);
 	b2body.linearVelocity.Set( Math.random() * 200, Math.random() * 200 );
 	bodies.push( world.CreateBody(b2body) );
 }

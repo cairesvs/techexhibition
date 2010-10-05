@@ -4,6 +4,8 @@
     <title>Agenda</title>
   </head>
   <body>
-  {{ agenda_html }}    
+    {% for div in divs %}
+      {{ div }}
+    {% endfor %}
   </body>
 </html>
