@@ -112,7 +112,8 @@ function createContentBall(item) {
 	var magicNumber = item.width * .5;
 	if (item.clazz !=='image' && item.clazz !=='image first') {
 		var graphics = circle.getContext( '2d' );
-		graphics.fillStyle = "rgba("+ item.background +",0.6)";
+    console.log(item.background);
+		graphics.fillStyle = item.background;
 		graphics.beginPath();
 		graphics.arc( magicNumber, magicNumber, magicNumber, 0, PI2, true );
 		graphics.closePath();
@@ -132,9 +133,9 @@ function createContentBall(item) {
 	var b2body = new b2BodyDef();
 	var circle = new b2CircleDef();
 	circle.radius = item.width / 2;
-	circle.density = ballDensity;
-	circle.friction = ballFriction;
-	circle.restitution = ballRestitution;
+  circle.density = 1;
+	circle.friction = 0.3;
+	circle.restitution = 0.3;
 	b2body.AddShape(circle);
 	b2body.userData = {element: element};
 	b2body.position.Set( Math.random() * stage[2], Math.random() * (stage[3]-item.width) + item.width/2);

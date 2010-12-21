@@ -1,15 +1,24 @@
 <html>
 <head>
-	<link href='http://fonts.googleapis.com/css?family=Josefin+Sans+Std+Light' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="/media/master.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 	<script type="text/javascript" charset="utf-8" src="/media/date.js"></script>
 </head>
 <body style="overflow:hidden;">
-	<h1>Boladão  de eventos</h1>
 	<div id="container"></div>
 	<div id="canvas"></div>
 	<script type="text/javascript" charset="utf-8">
+    var themes = [ [ "#10222B", "#95AB63", "#BDD684", "#E2F0D6", "#F6FFE0" ],
+      [ "#362C2A", "#732420", "#BF734C", "#FAD9A0", "#736859" ],
+      [ "#0D1114", "#102C2E", "#695F4C", "#EBBC5E", "#FFFBB8" ],
+      [ "#2E2F38", "#FFD63E", "#FFB54B", "#E88638", "#8A221C" ],
+      [ "#121212", "#E6F2DA", "#C9F24B", "#4D7B85", "#23383D" ],
+      [ "#343F40", "#736751", "#F2D7B6", "#BFAC95", "#8C3F3F" ],
+      [ "#000000", "#2D2B2A", "#561812", "#B81111", "#FFFFFF" ],
+      [ "#333B3A", "#B4BD51", "#543B38", "#61594D", "#B8925A" ] ];
+
+    var theme;
+
 		var html = '';
 		$.ajax({
 		  url: '/agenda',
@@ -19,25 +28,42 @@
 		  }
 		});
 	
-		eventos = [];
-		$(html).find("div").each(function(){
-		    if($(this).attr("class").match("evento*")){
-		      eventos.push(this);   
-		    }
+    var eventosPorLocal = {};
+		$(html).find('div').parent().not('.evento').each(function(count, element){
+      var eventos = [];
+      $($(this).children()).each(function(){
+        eventos.push(this);
+      })
+      eventosPorLocal[element.className] = eventos;
 		});
 	
 		var minhaData = new MinhaData(new Date());
 		var diaDeHoje = new Date().getDay() + "/" + minhaData.getMes();
-		for (var i=0; i < 10; i++) {
-			var estado = $(eventos[i]).find(".info").find("small").html()
-			var nome = $(eventos[i]).find(".info").find("#evento").find("a").html()
-			var data = $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
-			if( diaDeHoje == data){
-				$("div#container").append('<div class="ball" color="170,209,255"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
-			}else{
-				$("div#container").append('<div class="ball" color="255,217,106"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
-			}
+    var index = 0;
+    theme = themes[ Math.random() * themes.length >> 0 ]
+    for(local in eventosPorLocal){
+      var div = $('<div class="ball">');
+      var eventos = eventosPorLocal[local]; 
+      var length = 0;
+      for (var i=0; i < eventos.length; i++) {
+        length += adicionaNoContainerOsEventos(i, eventos, div)
+        $("div#container").append(div);
+      }
+      div[0].style.width = length < 100 ? 180 : length;
+      div[0].style.color = theme[index++]; 
+      div.attr('color', theme[index]);
 		};
+
+    function adicionaNoContainerOsEventos(count, eventos, div){
+			var estado = $(eventos[count]).find(".info").find("small").html()
+			var nome = $(eventos[count]).find(".info").find("#evento").find("a").html()
+			var data = $(eventos[count]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
+      $(div).append('<h2>'+ nome +'</h2>');
+      $(div).append('<p>'+ data +'</p>');
+      $(div).append('<p>'+ estado +'</p><br/>');
+      return nome.length*4;
+    }
+
 	</script>
 	<script type="text/javascript" src="/media/protoclass.js"></script> 
 	<script type="text/javascript" src='/media/box2d.js'></script>

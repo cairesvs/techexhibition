@@ -9,26 +9,39 @@
 	<script type="text/javascript" src='box2d.js'></script>
 	<script type="text/javascript" src='main.js'></script>
 	<script type="text/javascript" charset="utf-8">
-
-	var html = '';
-	$.ajax({
-	  url: '/agenda',
-	  async: false,
-	  success: function(data){
-	    html = data;
-	  }
-	});
+		var html = '';
+		$.ajax({
+		  url: '/agenda',
+		  async: false,
+		  success: function(data){
+		    html = data;
+		  }
+		});
 	
-	eventos = [];
-	$(html).find("div").each(function(){
-	    if($(this).attr("class").match("evento*")){
-	      eventos.push(this);   
-	    }
-	});
+		eventos = [];
+		$(html).find('div').parent().each(function(){
+        console.log($(this).attr("class").match("evento*"));
+		    if($(this).attr("class").match("evento*")){
+          console.log($(this));
+		      eventos.push(this);   
+		    }
+		});
 	
-	var estado = $(eventos[i]).find(".info").find("small").html()
-	var nome = $(eventos[i]).find(".info").find("#evento").find("a").html()
-	var data = $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
+		var minhaData = new MinhaData(new Date());
+		var diaDeHoje = new Date().getDay() + "/" + minhaData.getMes();
+		for (var i=0; i < 10; i++) {
+			var estado = $(eventos[i]).find(".info").find("small").html()
+			var nome = $(eventos[i]).find(".info").find("#evento").find("a").html()
+			var data = $(eventos[i]).find(".data").find("p").html() + "/" + $(eventos[i]).find(".data").find("small").html();
+			if( diaDeHoje == data){
+				$("div#container").append('<div class="ball" color="170,209,255"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
+			}else{
+				$("div#container").append('<div class="ball" color="255,217,106"><h2>'+ nome +'</h2><p>'+ data +'</p><p>'+ estado +'</p></div>');
+			}
+		};
 	</script>
+	<script type="text/javascript" src="/media/protoclass.js"></script> 
+	<script type="text/javascript" src='/media/box2d.js'></script>
+	<script type="text/javascript" src='/media/main.js'></script>
 </body>
 </html>

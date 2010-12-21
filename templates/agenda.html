@@ -4,8 +4,12 @@
     <title>Agenda</title>
   </head>
   <body>
-    {% for div in divs %}
-      {{ div }}
+    {% for eventoPorLocal in eventosPorLocal %}
+      <div class="{{ eventoPorLocal.local_safe }}">
+      {% for evento in eventoPorLocal.eventos %}
+        {{ evento }}
+      {% endfor %}
+      </div>
     {% endfor %}
   </body>
 </html>
